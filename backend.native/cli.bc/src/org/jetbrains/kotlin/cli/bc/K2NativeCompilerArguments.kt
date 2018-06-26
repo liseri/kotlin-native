@@ -150,6 +150,9 @@ class K2NativeCompilerArguments : CommonCompilerArguments() {
     )
     var friendModules: String? = null
 
+    @Argument(value = "--legacy-backend", description = "Use legacy LLVM backend")
+    var legacyBackend: Boolean = false
+
     override fun configureLanguageFeatures(collector: MessageCollector) = super.configureLanguageFeatures(collector).also {
         it[LanguageFeature.InlineClasses] = LanguageFeature.State.ENABLED // TODO: remove after updating to 1.3.
     }
