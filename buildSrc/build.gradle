@@ -23,6 +23,9 @@ buildscript {
 allprojects {
     repositories {
         maven {
+            url kotlinCompilerRepo
+        }
+        maven {
             url buildKotlinCompilerRepo
         }
         maven {

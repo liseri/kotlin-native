@@ -59,13 +59,15 @@ abstract class KonanTest extends JavaExec {
     // Uses directory defined in $outputSourceSetName source set.
     // If such source set doesn't exist, uses temporary directory.
     void createOutputDirectory() {
+        if (!project.hasProperty(getOutputSourceSetName()))
+            throw new RuntimeException("hasn't property ${getOutputSourceSetName()}")
         if (outputDirectory != null) {
             return
         }
 
-        def outputSourceSet = project.sourceSets.findByName(getOutputSourceSetName())
+        def outputSourceSet = project.property(getOutputSourceSetName())
         if (outputSourceSet != null) {
-            outputDirectory = outputSourceSet.output.getDirs().getSingleFile().absolutePath + "/$name"
+            outputDirectory =  "${outputSourceSet.absolutePath}/$name"
             project.file(outputDirectory).mkdirs()
         } else {
             outputDirectory = getTemporaryDir().absolutePath
@@ -366,13 +368,15 @@ abstract class ExtKonanTest extends KonanTest {
     // The same as its super() version but doesn't create a new dir for each test
     @Override
     void createOutputDirectory() {
+        if (!project.hasProperty(getOutputSourceSetName()))
+            throw new RuntimeException("hasn't property ${getOutputSourceSetName()}")
         if (outputDirectory != null) {
             return
         }
 
-        def outputSourceSet = project.sourceSets.findByName(getOutputSourceSetName())
+        def outputSourceSet = project.property(getOutputSourceSetName())
         if (outputSourceSet != null) {
-            outputDirectory = outputSourceSet.output.getDirs().getSingleFile().absolutePath
+            outputDirectory = outputSourceSet
             project.file(outputDirectory).mkdirs()
         } else {
             outputDirectory = getTemporaryDir().absolutePath
@@ -915,9 +919,13 @@ fun runTest() {
     @Override
     String buildExePath() {
         def outputDir
-        def outputSourceSet = project.sourceSets.findByName(getOutputSourceSetName())
+
+        if (!project.hasProperty(getOutputSourceSetName()))
+            throw new RuntimeException("hasn't property ${getOutputSourceSetName()}")
+
+        def outputSourceSet = project.proprty(getOutputSourceSetName())
         if (outputSourceSet != null) {
-            outputDir = outputSourceSet.output.getDirs().getSingleFile().absolutePath + "/$name"
+            outputDir = "${outputSourceSet.path}/$name"
         } else {
             outputDir = getTemporaryDir().absolutePath
         }

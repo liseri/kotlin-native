@@ -26,6 +26,9 @@ buildscript {
         maven {
             url buildKotlinCompilerRepo
         }
+        maven {
+            url kotlinCompilerRepo
+        }
     }
 
     dependencies {
@@ -74,30 +77,35 @@ ext.target = platformManager.targetManager(project.testTarget).target
 // Add executor to run tests depending on a target
 project.convention.plugins.executor = ExecutorServiceKt.create(project)
 
-allprojects {
-    // Root directories for test output (logs, compiled files, statistics etc). Only single path must be in each set.
-    sourceSets {
-        // backend.native/tests
-        testOutputLocal {
-            output.dir(rootProject.file("$testOutputRoot/local"))
-        }
-
-        // backend.native/tests/external
-        testOutputExternal {
-            output.dir(rootProject.file("$testOutputRoot/external"))
-        }
-
-        // backend.native/tests/stdlib_external
-        testOutputStdlib {
-            output.dir(rootProject.file("$testOutputRoot/stdlib"))
-        }
-
-        // backend.native/tests/framework
-        testOutputFramework {
-            output.dir(rootProject.file("$testOutputRoot/framework"))
-        }
-    }
+ext {
+    testOutputLocal = rootProject.file("$testOutputRoot/local")
+    testOutputFramework = rootProject.file("$testOutputRoot/framework")
 }
+
+//allprojects {
+//    // Root directories for test output (logs, compiled files, statistics etc). Only single path must be in each set.
+//    sourceSets {
+//        // backend.native/tests
+//        testOutputLocal {
+//            output.dir(rootProject.file("$testOutputRoot/local"))
+//        }
+//
+//        // backend.native/tests/external
+//        testOutputExternal {
+//            output.dir(rootProject.file("$testOutputRoot/external"))
+//        }
+//
+//        // backend.native/tests/stdlib_external
+//        testOutputStdlib {
+//            output.dir(rootProject.file("$testOutputRoot/stdlib"))
+//        }
+//
+//        // backend.native/tests/framework
+//        testOutputFramework {
+//            output.dir(rootProject.file("$testOutputRoot/framework"))
+//        }
+//    }
+//}
 
 konanArtifacts {
     library('testLibrary') {
@@ -2881,13 +2889,6 @@ task produce_dynamic(type: DynamicKonanTest) {
                 "topLevel = 777 3\n"
 }
 
-/**
- * Get sourceSet's output path as a string
- */
-static String outputPath(SourceSet set) {
-    return set.output.getDirs().getSingleFile().toString()
-}
-
 if (isMac() && project.testTarget != 'wasm32') {
     def target = ext.platformManager.targetByName(project.testTarget ?: 'host').name
 
@@ -2896,7 +2897,7 @@ if (isMac() && project.testTarget != 'wasm32') {
         konanArtifacts {
             framework(frameworkName, targets: [ target ]) {
                 srcDir 'framework/values'
-                baseDir outputPath(sourceSets.testOutputFramework) + "/$frameworkName"
+                baseDir "${testOutputFramework.path}/$frameworkName"
 
                 if (!useCustomDist) {
                     dependsOn ":${target}CrossDistRuntime", ':commonDistRuntime', ':distCompiler'
@@ -2911,7 +2912,7 @@ if (isMac() && project.testTarget != 'wasm32') {
         konanArtifacts {
             framework(frameworkName, targets: [ target ]) {
                 srcDir 'framework/stdlib'
-                baseDir outputPath(sourceSets.testOutputFramework) + "/$frameworkName"
+                baseDir "${testOutputFramework.path}/$frameworkName"
 
                 if (!useCustomDist) {
                     dependsOn ":${target}CrossDistRuntime", ':commonDistRuntime', ':distCompiler'

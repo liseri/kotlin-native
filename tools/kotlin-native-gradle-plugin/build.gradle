@@ -57,7 +57,7 @@ version = KonanVersion.Companion.CURRENT.toString()
 repositories {
     mavenCentral()
     maven {
-        url buildKotlinCompilerRepo
+        url kotlinCompilerRepo
     }
 }
 
@@ -72,14 +72,14 @@ configurations {
 }
 
 dependencies {
-    shadow "org.jetbrains.kotlin:kotlin-stdlib:$buildKotlinVersion"
-    shadow "org.jetbrains.kotlin:kotlin-gradle-plugin:$buildKotlinVersion"
+    shadow "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    shadow "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
 
     bundleDependencies "org.jetbrains.kotlin:kotlin-native-shared:$konanVersion"
 
     testImplementation 'junit:junit:4.12'
-    testImplementation "org.jetbrains.kotlin:kotlin-test:$buildKotlinVersion"
-    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$buildKotlinVersion"
+    testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlinVersion"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion"
     testImplementation "org.tools4j:tools4j-spockito:1.6"
     testImplementation('org.spockframework:spock-core:1.1-groovy-2.4') {
         exclude module: 'groovy-all'

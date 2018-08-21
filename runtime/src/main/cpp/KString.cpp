@@ -737,6 +737,26 @@ KInt Kotlin_String_compareTo(KString thiz, KString other) {
   return diff < 0 ? -1 : 1;
 }
 
+KInt Kotlin_String_compareToIgnoreCase(KString thiz, KConstRef other) {
+  RuntimeAssert(thiz->type_info() == theStringTypeInfo &&
+                other->type_info() == theStringTypeInfo, "Must be strings");
+  // Important, due to literal internalization.
+  KString otherString = other->array();
+  if (thiz == otherString) return 0;
+  if (thiz->count_ > otherString->count_) return 1;
+  else if (thiz->count_ < otherString->count_) return -1;
+  auto count = thiz->count_;
+  const KChar* thizRaw = CharArrayAddressOfElementAt(thiz, 0);
+  const KChar* otherRaw = CharArrayAddressOfElementAt(otherString, 0);
+  for (KInt index = 0; index < count; ++index) {
+    int diff = towlower_Konan(*thizRaw++) - towlower_Konan(*otherRaw++);
+    if (diff != 0)
+      return diff < 0 ? -1 : 1;
+  }
+  return 0;
+}
+
+
 KChar Kotlin_String_get(KString thiz, KInt index) {
   if (static_cast<uint32_t>(index) >= thiz->count_) {
     ThrowArrayIndexOutOfBoundsException();

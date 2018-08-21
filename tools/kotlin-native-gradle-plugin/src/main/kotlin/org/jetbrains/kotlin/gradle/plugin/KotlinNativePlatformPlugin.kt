@@ -42,7 +42,7 @@ open class KotlinNativePlatformPlugin: KotlinPlatformImplementationPluginBase("n
                                     "for an artifact '${task.artifactName}' " +
                                     "in a platform project '${platformProject.path}'")
 
-                            commonSourceSet.kotlin!!.srcDirs.forEach {
+                            getKotlinSourceDirectorySetSafe(commonSourceSet)?.forEach {
                                 task.commonSrcDir(it)
                             }
                         }
@@ -52,4 +52,13 @@ open class KotlinNativePlatformPlugin: KotlinPlatformImplementationPluginBase("n
 
     protected val Project.sourceSets: SourceSetContainer
         get() = convention.getPlugin(JavaPluginConvention::class.java).sourceSets
+}
+// TODO: this method is internal since 1.3-M2-33.
+internal fun <T> Project.whenEvaluated(fn: Project.() -> T) {
+    if (state.executed) {
+        fn()
+    }
+    else {
+        afterEvaluate { it.fn() }
+    }
 }

@@ -32,6 +32,9 @@ repositories {
     maven {
         url buildKotlinCompilerRepo
     }
+    maven {
+        url kotlinCompilerRepo
+    }
 }
 
 task generateCompilerVersion(type: VersionGenerator){}
